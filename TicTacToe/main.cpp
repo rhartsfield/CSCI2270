@@ -10,8 +10,8 @@ int main()
 {
     bool playAgain = displayMenu();
     while (playAgain) {
-        cout << "\033[2J\033[1;1H";
         Board gameBoard;
+        gameBoard.clearScreen();
         gameBoard.displayBoard();
         while (!gameBoard.gameOver) {
             gameBoard.playerTurn();
@@ -22,7 +22,7 @@ int main()
         cout << "Return to Menu? (Y/N)" << endl;
         cin >> ret;
         if (ret == 'Y' || ret == 'y') {
-            cout << "\033[2J\033[1;1H";
+            gameBoard.clearScreen();
             playAgain = displayMenu();
         }
         else {

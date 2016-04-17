@@ -6,9 +6,9 @@
 
 Board::Board()
 {
-    for (int i = 0; i < 9; i++) {
-        config[i] = EMPTY;
-    }
+//    for (int i = 0; i < 9; i++) {
+//        config[i] = EMPTY;
+//    }
     result = CONT;
     //ctor
 }
@@ -23,6 +23,7 @@ void Board::displayBoard() {
     int i = 0;
     std::cout << "--Tic-Tac-Toe--" << std::endl << std::endl;
     std::cout << "   ";
+    Position *config = getConfig();
     for (;i < 9; i++) {
         char display;
         if (config[i] == XMOVE) {
@@ -48,29 +49,33 @@ void Board::displayBoard() {
 }
 
 void Board::playerTurn() {
-    int i;
     bool firstTurn = true;
+    Position *config = getConfig();
     for (int i = 0; i < 9; i++) {
         if (config[i] != EMPTY) {
             firstTurn = false;
         }
     }
+    int index;
     std::cout << "Where do you want to move?" <<std::endl;
-    std::cin >> i;
+    std::cin >> index;
     std::cin.clear();
+    index -= 1;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    if (i < 1 || i > 9 || config[i-1] != EMPTY) {
+    if (index < 0 || index > 8 || config[index] != EMPTY) {
         std::cout << "Enter a valid position." << std::endl;
         playerTurn();
     }
     else{
-        config[i-1] = XMOVE;
         if (firstTurn) {
-            buildConfigTree();
+            buildConfigTree(index);
         }
-        std::cout << "\033[2J\033[1;1H";
+        else {
+            takeMove(index, XMOVE);
+        }
+        clearScreen();
         displayBoard();
-        result = checkStatus();
+        result = getStatus();
         if (result != CONT) {
             gameOver = true;
         }
@@ -78,106 +83,42 @@ void Board::playerTurn() {
 }
 
 void Board::computerTurn() {
-    bool moved = false;
-    for (int i = 0; i < 9; i++) {
-        if (config[i] == EMPTY && !moved) {
-            config[i] = OMOVE;
-            moved = true;
+    if (!gameOver) {
+        int index = findNextMove();
+        std::cout << "Computer moves to: " << index << std::endl;
+        takeMove(index, OMOVE);
+        clearScreen();
+        displayBoard();
+        result = getStatus();
+        if (result != CONT) {
+            gameOver = true;
         }
     }
-    int index = findNextMove();
+}
+
+void Board::clearScreen() {
     std::cout << "\033[2J\033[1;1H";
-    displayBoard();
-    result = checkStatus();
-    if (result != CONT) {
-        gameOver = true;
-    }
+}
+
+void Board::takeMove(int index, Position nextMove) {
+    configTree.setConfig(index, nextMove);
 }
 
 int Board::findNextMove() {
     return configTree.nextMove();
 }
 
-Outcome Board::checkStatus() {
-    //First check horizontals
-    if (config[0] == config[1] && config[1] == config[2]) {
-        if (config[0] == OMOVE) {
-            return COMP;
-        }
-        if (config[0] == XMOVE) {
-            return PLAYER;
-        }
-    }
-    else if (config[3] == config[4] && config[4] == config[5]) {
-        if (config[3] == OMOVE) {
-            return COMP;
-        }
-        if (config[3] == XMOVE) {
-            return PLAYER;
-        }
-    }
-    else if (config[6] == config[7] && config[7] == config[8]) {
-        if (config[6] == OMOVE) {
-            return COMP;
-        }
-        if (config[6] == XMOVE) {
-            return PLAYER;
-        }
-    }
-    //Next check verticals
-    else if (config[0] == config[3] && config[3] == config[6]) {
-        if (config[0] == OMOVE) {
-            return COMP;
-        }
-        if (config[0] == XMOVE) {
-            return PLAYER;
-        }
-    }
-    else if (config[1] == config[4] && config[4] == config[7]) {
-        if (config[1] == OMOVE) {
-            return COMP;
-        }
-        if (config[1] == XMOVE) {
-            return PLAYER;
-        }
-    }
-    else if (config[2] == config[5] && config[5] == config[8]) {
-        if (config[2] == OMOVE) {
-            return COMP;
-        }
-        if (config[2] == XMOVE) {
-            return PLAYER;
-        }
-    }
-    //Now check diagonals
-    else if (config[0] == config[4] && config[4] == config[8]) {
-        if (config[0] == OMOVE) {
-            return COMP;
-        }
-        if (config[0] == XMOVE) {
-            return PLAYER;
-        }
-    }
-    else if (config[2] == config[4] && config[4] == config[6]) {
-        if (config[2] == OMOVE) {
-            return COMP;
-        }
-        if (config[2] == XMOVE) {
-            return PLAYER;
-        }
-    }
+Outcome Board::getStatus() {
+    return configTree.checkCurrent();
+}
 
-    //Check for cat's game
-    bool cats = true;
-    for (int i = 0; i < 9; i++) {
-        if (config[i] == EMPTY) {
-            cats = false;
-        }
-    }
-    if (cats) {
-        return CATS;
-    }
-    return CONT;
+void Board::buildConfigTree(int index){
+    configTree.firstMove(index);
+    configTree.populate();
+}
+
+Position *Board::getConfig(){
+    return configTree.getCurrentConfig();
 }
 
 void Board::decideWinner(){
@@ -190,9 +131,4 @@ void Board::decideWinner(){
     else {
         std::cout << "Sorry, you lose!" << std::endl;
     }
-}
-
-void Board::buildConfigTree(){
-    configTree.firstMove(config);
-    configTree.populate();
 }
