@@ -1,0 +1,42 @@
+# depslib dependency file v1.0
+1460749908 source:/home/user/Desktop/DataStructures/TicTacToe/main.cpp
+	<iostream>
+	<limits>
+	"Board.h"
+
+1460750589 /home/user/Desktop/DataStructures/TicTacToe/include/Board.h
+	"ConfigTree.h"
+
+1460754866 /home/user/Desktop/DataStructures/TicTacToe/include/ConfigTree.h
+
+1460750922 source:/home/user/Desktop/DataStructures/TicTacToe/src/ConfigTree.cpp
+	"ConfigTree.h"
+
+1460754437 source:/home/user/Desktop/DataStructures/TicTacToe/src/Board.cpp
+	"Board.h"
+	<iostream>
+	<string>
+	<stdio.h>
+	<limits>
+
+1460749908 source:/home/user/Desktop/FinalProject/TicTacToe/main.cpp
+	<iostream>
+	<limits>
+	"Board.h"
+
+1460916404 /home/user/Desktop/FinalProject/TicTacToe/include/Board.h
+	"ConfigTree.h"
+
+1460917192 /home/user/Desktop/FinalProject/TicTacToe/include/ConfigTree.h
+
+1460917364 source:/home/user/Desktop/FinalProject/TicTacToe/src/Board.cpp
+	"Board.h"
+	<iostream>
+	<string>
+	<stdio.h>
+	<limits>
+
+1460917412 source:/home/user/Desktop/FinalProject/TicTacToe/src/ConfigTree.cpp
+	"ConfigTree.h"
+	<iostream>
+
