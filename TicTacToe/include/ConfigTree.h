@@ -24,12 +24,10 @@ struct Node{
 class ConfigTree
 {
     public:
-        Node *root;
         ConfigTree();
         ~ConfigTree();
         void firstMove(int index);
         void populate();
-        Node *takeStep(Position config[]);
         int nextMove();
         void setConfig(int index, Position current);
         Outcome checkCurrent();
@@ -37,6 +35,7 @@ class ConfigTree
         Position *getCurrentConfig();
     protected:
     private:
+        Node *root;
         void addRec(Node *parent, Position config[], Position next);
         void calcProbs(Node *parent);
         Outcome checkStatus(Node *current);

@@ -13,7 +13,7 @@ int main()
         Board gameBoard;
         gameBoard.clearScreen();
         gameBoard.displayBoard();
-        while (!gameBoard.gameOver) {
+        while (!gameBoard.isGameFinished()) {
             gameBoard.playerTurn();
             gameBoard.computerTurn();
         }

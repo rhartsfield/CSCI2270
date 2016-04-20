@@ -5,8 +5,7 @@
 class Board
 {
     public:
-        bool gameOver = false;
-        bool firstTurn = true;
+        bool isGameFinished();
         void displayBoard();
         void playerTurn();
         void computerTurn();
@@ -16,6 +15,8 @@ class Board
         ~Board();
     protected:
     private:
+        bool gameOver = false;
+        bool firstTurn = true;
         Outcome getStatus();
         void takeMove(int index, Position nextMove);
         Position *getConfig();

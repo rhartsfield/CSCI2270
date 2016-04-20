@@ -6,9 +6,6 @@
 
 Board::Board()
 {
-//    for (int i = 0; i < 9; i++) {
-//        config[i] = EMPTY;
-//    }
     result = CONT;
     //ctor
 }
@@ -18,7 +15,13 @@ Board::~Board()
     //dtor
 }
 
+bool Board::isGameFinished() {
+    /** Returns a bool whether or not win conditions have been met **/
+    return gameOver;
+}
+
 void Board::displayBoard() {
+    /** Displays the current board configuration for the user **/
     char digits[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
     int i = 0;
     std::cout << "--Tic-Tac-Toe--" << std::endl << std::endl;
@@ -49,6 +52,9 @@ void Board::displayBoard() {
 }
 
 void Board::playerTurn() {
+    /** Asks for the player to input a location to place an X
+        If it is the first turn, the configuration tree is built,
+        otherwise the current configuration is updated **/
     bool firstTurn = true;
     Position *config = getConfig();
     for (int i = 0; i < 9; i++) {
@@ -83,6 +89,9 @@ void Board::playerTurn() {
 }
 
 void Board::computerTurn() {
+    /** The computer searches the tree for a move with a high
+        win percentage and then updates the current configuration
+    **/
     if (!gameOver) {
         int index = findNextMove();
         std::cout << "Computer moves to: " << index << std::endl;
@@ -97,31 +106,43 @@ void Board::computerTurn() {
 }
 
 void Board::clearScreen() {
+    /** Clear the screen using some weird string **/
     std::cout << "\033[2J\033[1;1H";
 }
 
 void Board::takeMove(int index, Position nextMove) {
+    /** Has the configuration tree update the current configuration **/
     configTree.setConfig(index, nextMove);
 }
 
 int Board::findNextMove() {
+    /** Has the configuration tree search for the next move
+        and return the index to place the O **/
     return configTree.nextMove();
 }
 
 Outcome Board::getStatus() {
+    /** Has the configuration tree check the current config for
+        win conditions. Returns the Outcome of the check. **/
     return configTree.checkCurrent();
 }
 
 void Board::buildConfigTree(int index){
+    /** Initializes the configuration tree by first setting the first
+        move to decrease overall size of the tree, then populates
+        the rest of the tree **/
     configTree.firstMove(index);
     configTree.populate();
 }
 
 Position *Board::getConfig(){
+    /** Returns the current configuration, implemented as an array of
+        nine Positions **/
     return configTree.getCurrentConfig();
 }
 
 void Board::decideWinner(){
+    /** Checks the value of result member to output winner **/
     if (result == CATS) {
         std::cout << "Cat's Game!" << std::endl;
     }

@@ -202,6 +202,7 @@ Outcome ConfigTree::checkCurrent() {
 }
 
 void ConfigTree::printNode(Node *print) {
+    /** For debugging purposes only **/
     std::cout << print->status << std::endl;
     std::cout << print->config[0] << " " << print->config[1] << " " << print->config[2] << std::endl;
     std::cout << print->config[3] << " " << print->config[4] << " " << print->config[5] << std::endl;
