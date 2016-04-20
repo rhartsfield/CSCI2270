@@ -3,6 +3,8 @@
 
 ConfigTree::ConfigTree()
 {
+    /** Set up the root of the tree and set current configuration to root
+        Postpone tree construction so 9! final configs avoided **/
     //ctor
     Position c[9];
     for (int i = 0; i < 9; i++) {
@@ -20,16 +22,22 @@ ConfigTree::~ConfigTree()
 }
 
 void ConfigTree::firstMove(int index) {
+    /** Doesn't create new nodes, just modifies current root/cc **/
     root->config[index] = XMOVE;
     currentConfig->config[index] = XMOVE;
+    currentConfig->status = CONT;
 }
 
 void ConfigTree::populate() {
+    /** First recursively build the whole tree, then calculate probabilities **/
     addRec(root, root->config, OMOVE);
     calcProbs(root);
 }
 
 void ConfigTree::addRec(Node *parent, Position c[], Position next) {
+    /** Recursively build the configuration tree. Each node is a possible config
+        of the board. Children are the n <= 8 moves possible from the current config.
+        Any node that contains win conditions does not produce children to trim tree **/
     Position nextNext;
     //Make sure we only add non-completed games
     if (parent->status == CONT) {
@@ -44,12 +52,12 @@ void ConfigTree::addRec(Node *parent, Position c[], Position next) {
             if (c[i] == EMPTY) {
                 //Set c as next config
                 c[i] = next;
-                //Build next node
+                //Build next node (tsugi = next), add to children
                 Node *tsugi = new Node(c);
                 tsugi->status = checkStatus(tsugi);
                 tsugi->parent = parent;
                 parent->nextMoves.push_back(tsugi);
-                //recursively generate paths
+                //recursively generate paths from tsugi
                 addRec(tsugi, tsugi->config, nextNext);
                 //return c to former state
                 c[i] = EMPTY;
@@ -59,6 +67,9 @@ void ConfigTree::addRec(Node *parent, Position c[], Position next) {
 }
 
 void ConfigTree::calcProbs(Node *parent) {
+    /** Calculate the win probabilities to serve as basic AI
+        Always count self in total, and only count self if a
+        computer win for win % **/
     float totalGames = 1;
     float totalWins = 0;
     if (parent->status == COMP) {
@@ -66,6 +77,7 @@ void ConfigTree::calcProbs(Node *parent) {
     }
     else if (parent->status == CONT){
         for (int i = 0; i < parent->nextMoves.size(); i++) {
+            //Recursively generate probs for children first
             calcProbs(parent->nextMoves[i]);
             totalGames += parent->nextMoves[i]->totalLeaves;
             totalWins += parent->nextMoves[i]->winLeaves;
@@ -77,10 +89,9 @@ void ConfigTree::calcProbs(Node *parent) {
 }
 
 int ConfigTree::nextMove() {
-    /**
-     *  Checks the current board configuration for the next
-     *  possible move with the highest win %
-     */
+    /** Checks the current board configuration for the next
+        possible move with the highest win % and returns the
+        index of the next move **/
     int index = 0;
     float maxProb = -1;
     for (int i = 0; i < currentConfig->nextMoves.size(); i++) {
@@ -99,6 +110,7 @@ int ConfigTree::nextMove() {
 }
 
 void ConfigTree::setConfig(int index, Position current) {
+    /** Updates the tree's current config to the next move **/
     Node *tmp = currentConfig;
     for (int i = 0; i < currentConfig->nextMoves.size(); i++) {
         if (currentConfig->nextMoves[i]->config[index] == current) {
@@ -108,13 +120,13 @@ void ConfigTree::setConfig(int index, Position current) {
     currentConfig = tmp;
 }
 
-/**
-
-Long logic block of checking for game conditions
-
- */
-
 Outcome ConfigTree::checkStatus(Node *current) {
+    /** Check the board config for win conditions and return
+        an outcome.
+        COMP = Computer win
+        PLAYER = Player win
+        CATS = Cat's game
+        CONT = Continue with next turn*/
     Position *config = current->config;
     //First check horizontals
     if (config[0] == config[1] && config[1] == config[2]) {
@@ -183,7 +195,6 @@ Outcome ConfigTree::checkStatus(Node *current) {
             return PLAYER;
         }
     }
-
     //Check for cat's game
     bool cats = true;
     for (int i = 0; i < 9; i++) {
@@ -198,6 +209,7 @@ Outcome ConfigTree::checkStatus(Node *current) {
 }
 
 Outcome ConfigTree::checkCurrent() {
+    /** Return the win conditions of the current config **/
     return checkStatus(currentConfig);
 }
 
@@ -211,5 +223,6 @@ void ConfigTree::printNode(Node *print) {
 }
 
 Position *ConfigTree::getCurrentConfig() {
+    /** Returns a pointer to the current config array **/
     return currentConfig->config;
 }

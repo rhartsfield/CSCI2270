@@ -1,6 +1,7 @@
 #ifndef CONFIGTREE_H
 #define CONFIGTREE_H
 #import <vector>
+
 enum Position {EMPTY, XMOVE, OMOVE};
 enum Outcome {CONT, PLAYER, COMP, CATS};
 
