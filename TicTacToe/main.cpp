@@ -35,6 +35,7 @@ int main()
 
 bool displayMenu() {
     int choice;
+    cout << "\033[2J\033[1;1H";
     cout << "Welcome to Tic-Tac-Toe!" << endl << endl;
     cout << "Please select an option:" << endl;
     cout << "1. Play vs. Computer" << endl;
